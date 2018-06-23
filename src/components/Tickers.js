@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import './Tickers.css';
 import Cryptocurrency from './Cryptocurrency';
 
@@ -36,6 +37,21 @@ class Tickers extends Component {
                 }
             ]
         };
+    }
+
+    componentDidMount(){
+        this.fetchCryptocurrencyData();
+        this.interval = setInterval(() => this.fetchCryptocurrencyData(), 60 * 1000);
+    }
+
+    fetchCryptocurrencyData(){
+        axios.get('https://api.coinmarketcap.com/v1/ticker/?limit=10')
+            .then(response => {
+                var wanted = ["bitcoin", "ethereum", "litecoin"];
+                var result = response.data.filter( currency=> wanted.includes(currency.id));
+                this.setState({ data: result});
+            })
+            .catch(err => console.log(err))
     }
 
     render(){
